@@ -1,0 +1,12 @@
+# Kod wgrywany na kontrolery (firmware ESP32, MicroPython) - tylko lokalnie, nie do repozytorium
+controllers/
+
+# Ustawienia edytora (ścieżki lokalne)
+.vscode/
+
+# Kopia oryginalnego firmware płytki (zrzut flash 4 MB, nie do repozytorium)
+backup/
+
+__pycache__/
+*.pyc
+*.wav

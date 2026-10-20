@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14181f">
+  <meta name="description" content="Zestaw testów dźwiękowych dla matrycy mikrofonów SilentHorizon.">
+  <title>SilentHorizon Testy</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icons/icon-192.png">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <header>
+    <button id="back" class="icon-button" aria-label="Wróć" hidden>‹</button>
+    <h1 id="title">SilentHorizon · testy</h1>
+  </header>
+
+  <main>
+    <section id="list-view">
+      <details class="tips">
+        <summary>Zanim zaczniesz</summary>
+        <ul>
+          <li>Ustaw głośność multimediów na maksimum i nie zmieniaj jej między testami.</li>
+          <li>Wyłącz efekty dźwięku telefonu (Dolby, korektor, „wzmacniacz”).</li>
+          <li>Głośnik jest zwykle na dolnej krawędzi telefonu - to on jest źródłem dźwięku.
+            Trzymaj go na wysokości matrycy, skierowany w jej środek.</li>
+          <li>Odległość mierz od środka matrycy do głośnika telefonu.</li>
+          <li>Połącz nody (sekcja „Nody”) - aplikacja sama przełącza ich tryby i wstawia znaczniki.
+            Bez połączenia ustaw tryb ręcznie (litera przy teście).</li>
+          <li>Na zewnątrz: z dala od ścian i aut, najlepiej bez wiatru.</li>
+          <li>Stanowisko i 8 pozycji testowych: <code>docs/stanowisko-testowe.md</code> w repozytorium.</li>
+        </ul>
+      </details>
+      <section class="nodes">
+        <div class="nodes-head">
+          <h2>Nody</h2>
+          <button id="add-ble" class="small">+ Bluetooth</button>
+          <button id="add-usb" class="small">+ USB</button>
+        </div>
+        <ul id="nodes" class="node-list"></ul>
+        <p id="nodes-hint" class="hint">Połącz nody (testowy i wzorcowy), żeby test sam przełączał ich tryby,
+          wstawiał znaczniki pozycji i zapisywał ich dane w sesji.</p>
+        <p class="hint">Nod włącza Bluetooth po starcie. Gdy przez 30 s nikt się nie połączy, wyłącza go
+          i włącza Wi-Fi. Połączony nod zostaje dostępny; po rozłączeniu znowu czeka 30 s.
+          Żeby połączyć się z nodem, który już przeszedł na Wi-Fi, wyłącz i włącz jego zasilanie.</p>
+      </section>
+      <ul id="tests" class="cards"></ul>
+      <p class="viewer-link"><a href="viewer.html">Podgląd wyników z urządzenia (kierunek, poziomy) →</a></p>
+    </section>
+
+    <section id="test-view" hidden>
+      <p id="test-instructions" class="instructions"></p>
+      <p class="mode">Tryb urządzenia: <b id="test-mode"></b></p>
+      <form id="params"></form>
+      <button id="start" class="primary">Start</button>
+    </section>
+
+    <section id="node-view" hidden>
+      <p id="node-info" class="instructions"></p>
+      <form id="node-form" onsubmit="return false">
+        <fieldset>
+          <legend>Praca</legend>
+          <label>Tryb po starcie
+            <select name="mode">
+              <option value="l">l - poziom (dB SPL co 5 s)</option>
+              <option value="r">r - odniesienie (dBFS co 1 s)</option>
+              <option value="e">e - zdarzenia (klaśnięcia)</option>
+              <option value="t">t - śledzenie kierunku</option>
+            </select>
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>Sieć Wi-Fi</legend>
+          <label class="check"><input name="wifi" type="checkbox"> Wi-Fi włączone</label>
+          <label>Sieć (SSID)
+            <input name="wifi_ssid" type="text" autocomplete="off" maxlength="32">
+          </label>
+          <label>Hasło
+            <input name="wifi_pass" type="password" autocomplete="new-password" maxlength="64" placeholder="bez zmian">
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>Identyfikacja i położenie</legend>
+          <label>Identyfikator nodu (liczba, 0 = wyłączone)
+            <input name="node_id" type="number" step="1" min="0" max="999999999" inputmode="numeric">
+          </label>
+          <label>Szerokość geograficzna [°]
+            <input name="lat" type="text" inputmode="decimal" autocomplete="off" placeholder="np. 52.229676">
+          </label>
+          <label>Długość geograficzna [°]
+            <input name="lon" type="text" inputmode="decimal" autocomplete="off" placeholder="np. 21.012229">
+          </label>
+        </fieldset>
+        <fieldset>
+          <legend>Kalibracja</legend>
+          <label>Stała kalibracji [dB] (dB SPL = dBFS + stała)
+            <input name="cal" type="number" step="0.01" min="80" max="160" inputmode="decimal">
+          </label>
+          <p class="hint">Zmiana przesuwa wszystkie poziomy dB SPL tego nodu. Przed zapisem pojawi się pytanie.</p>
+        </fieldset>
+      </form>
+      <button id="node-save" class="primary">Zapisz w nodzie</button>
+      <h2>Historia zmian</h2>
+      <p class="hint">Zapisana w nodzie, nie da się jej skasować. Ostatnia wartość każdego klucza to obecna
+        konfiguracja; „u” to numer uruchomienia nodu, „+s” sekundy od tego uruchomienia.</p>
+      <pre id="node-history"></pre>
+      <h2>Odpowiedzi nodu</h2>
+      <pre id="node-log"></pre>
+    </section>
+
+    <section id="run-view" hidden>
+      <div class="now">
+        <div id="run-label" class="label"></div>
+        <div id="run-detail" class="detail"></div>
+        <div id="run-countdown" class="countdown"></div>
+      </div>
+      <progress id="run-progress" max="1" value="0"></progress>
+      <p id="run-next" class="next"></p>
+      <button id="gate" class="primary" hidden>Start pozycji</button>
+      <button id="stop" class="danger">Zatrzymaj</button>
+      <p id="run-nodes" class="hint"></p>
+    </section>
+
+    <section id="log-view" hidden>
+      <h2>Dziennik</h2>
+      <pre id="log"></pre>
+      <p id="session-count" class="hint"></p>
+      <button id="save-session" class="primary">Pobierz sesję (z danymi nodów)</button>
+      <button id="copy-log">Kopiuj dziennik</button>
+    </section>
+  </main>
+
+  <script type="module" src="app.js"></script>
+</body>
+</html>

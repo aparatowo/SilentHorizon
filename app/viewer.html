@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="pl">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#14181f">
+  <meta name="description" content="Podgląd kierunku i poziomu dźwięku z matrycy SilentHorizon.">
+  <title>SilentHorizon Podgląd</title>
+  <link rel="manifest" href="manifest.webmanifest">
+  <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="wide">
+  <header>
+    <a href="./" class="icon-button" aria-label="Testy">‹</a>
+    <h1>SilentHorizon · podgląd</h1>
+  </header>
+
+  <main>
+    <div class="toolbar">
+      <button id="connect-ble" class="primary small">Połącz przez Bluetooth</button>
+      <button id="connect" class="small">Połącz kablem (USB)</button>
+      <div class="segmented" role="group" aria-label="Tryb urządzenia">
+        <button data-mode="l" disabled>Poziom</button>
+        <button data-mode="r" disabled>Odniesienie</button>
+        <button data-mode="e" disabled>Zdarzenia</button>
+        <button data-mode="t" disabled>Śledzenie</button>
+      </div>
+      <button id="reset" class="small" disabled>Restart płytki</button>
+      <span class="cal">
+        <label for="cal-value">Stała kalibracji [dB]</label>
+        <input id="cal-value" type="number" step="0.01" min="80" max="160" inputmode="decimal" placeholder="120.00">
+        <button id="cal-save" class="small" disabled>Zapisz w nodzie</button>
+      </span>
+      <label class="small file">Wczytaj dziennik<input id="file" type="file" accept=".log,.txt,text/plain"></label>
+      <button id="save" class="small">Zapisz dziennik</button>
+      <button id="clear" class="small">Wyczyść</button>
+    </div>
+    <p id="status" class="status">Niepołączono. Bluetooth: Chrome na Androidzie lub komputerze. Kabel USB: Chrome/Edge na komputerze.</p>
+
+    <div class="viewer">
+      <div class="dial-wrap">
+        <canvas id="dial" aria-label="Kierunek dźwięku względem matrycy"></canvas>
+        <div id="readout" class="readout"></div>
+      </div>
+      <div class="side" id="events-panel">
+        <h2>Zdarzenia</h2>
+        <ol id="events" class="events" reversed></ol>
+      </div>
+    </div>
+  </main>
+
+  <script type="module" src="viewer.js"></script>
+</body>
+</html>
