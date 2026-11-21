@@ -41,9 +41,9 @@ Każda para ma własny komplet kolorów - od razu widać, który przewód należ
 |---|---|---|---|---|
 | VCC (3,3 V) | 🟥 czerwony | 🟫 brązowy | 3V3 | 3V3 |
 | GND | 🟦 niebieski | ⬛ czarny | GND | GND |
-| SD (dane) | 🟧 pomarańczowy | ⬜ biały | G32 (NR1) / G33 (NR2) | G6 (NR1) / G7 (NR2) |
-| SCK (zegar) | 🟨 żółty | 🟪 fioletowy | G14 | G4 |
-| WS (kanał) | 🟩 zielony | ◻️ szary | G15 | G5 |
+| SD (dane) | 🟧 pomarańczowy | ⬜ biały | G32 (NR1) / G33 (NR2) | G8 (NR1) / G7 (NR2) |
+| SCK (zegar) | 🟨 żółty | 🟪 fioletowy | G14 | G2 |
+| WS (kanał) | 🟩 zielony | ◻️ szary | G15 | G4 |
 
 - **SCK i WS obu par idą do tych samych pinów płytki**: żółty i fioletowy razem do pinu SCK,
   zielony i szary razem do pinu WS. Różne kolory są tylko po to, żeby odróżnić pary.
@@ -81,6 +81,10 @@ Kolory przewodów: tabela „Kolory przewodów” wyżej.
 | M3 (lewy dolny) | 3V3 | GND | G14 | G15 | G33 | GND |
 | M4 (prawy dolny) | 3V3 | GND | G14 | G15 | G33 | 3V3 |
 
+**Uwaga:** SD pary NR1 (M1, M2) idzie do **G8**, a NR2 (M3, M4) do **G7**. Zamiana tych dwóch
+przewodów zamienia mikrofony M1↔M3 i M2↔M4 w danych (kierunki N↔W oraz E↔S), więc okablowanie
+musi odpowiadać stałym `PIN_SD_PAIR1/2` w firmware.
+
 ### Dioda
 
 G2 - dioda na płytce (stan urządzenia). Nic więcej nie trzeba podłączać.
@@ -112,11 +116,11 @@ Moduł **ESP32-S3-WROOM-1 N16R8** (16 MB flash, 8 MB PSRAM).
 ### Mikrofony
 
 ```
-  wspólne dla M1, M2, M3, M4:   VDD -> 3V3    GND -> GND    SCK -> G4    WS -> G5
+  wspólne dla M1, M2, M3, M4:   VDD -> 3V3    GND -> GND    SCK -> G2    WS -> G4
 
       M1  (L/R -> GND)                M2  (L/R -> 3V3)
          SD ─────────────┬──────────────── SD
-                         └────────────────────────► G6     para NR1 (góra)
+                         └────────────────────────► G8     para NR1 (góra)
 
       M3  (L/R -> GND)                M4  (L/R -> 3V3)
          SD ─────────────┬──────────────── SD
@@ -127,10 +131,10 @@ Kolory przewodów: tabela „Kolory przewodów” wyżej (te same co na ESP32, i
 
 | Mikrofon | VDD | GND | SCK | WS | SD | L/R |
 |---|---|---|---|---|---|---|
-| M1 | 3V3 | GND | G4 | G5 | G6 | GND |
-| M2 | 3V3 | GND | G4 | G5 | G6 | 3V3 |
-| M3 | 3V3 | GND | G4 | G5 | G7 | GND |
-| M4 | 3V3 | GND | G4 | G5 | G7 | 3V3 |
+| M1 | 3V3 | GND | G2 | G4 | G8 | GND |
+| M2 | 3V3 | GND | G2 | G4 | G8 | 3V3 |
+| M3 | 3V3 | GND | G2 | G4 | G7 | GND |
+| M4 | 3V3 | GND | G2 | G4 | G7 | 3V3 |
 
 ### Dioda
 
